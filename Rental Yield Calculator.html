@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Yield Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 400px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Real Estate Yield Calculator</h2>
+        <label for="purchasePrice">Property Purchase Price ($):</label>
+        <input type="number" id="purchasePrice" placeholder="Enter property price">
+        
+        <label for="rentalIncome">Rental Income (Weekly) ($):</label>
+        <input type="number" id="rentalIncome" placeholder="Enter weekly rental income">
+
+        <label for="agencyFee">Real Estate Agency Fee (%):</label>
+        <input type="number" id="agencyFee" placeholder="Enter agency fee percentage" value="8">
+
+        <label for="postcode">Postcode:</label>
+        <input type="number" id="postcode" placeholder="Enter postcode" onchange="calculateCouncilRates()">
+
+        <label for="councilRates">Council Rates (Annual) ($):</label>
+        <input type="number" id="councilRates" placeholder="Council rates will be calculated automatically">
+
+        <label for="bodyCorporate">Body Corporate Fee (Annual) ($):</label>
+        <input type="number" id="bodyCorporate" placeholder="Enter body corporate fee (if any)">
+
+        <button onclick="calculateYield()">Calculate Yield</button>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function calculateCouncilRates() {
+            const postcode = document.getElementById('postcode').value;
+            let councilRate;
+
+            // Example council rates based on postcode
+            switch (postcode) {
+                case '4000': // Brisbane CBD
+                    councilRate = 2000;
+                    break;
+                case '4217': // Gold Coast
+                    councilRate = 2500;
+                    break;
+                case '4558': // Sunshine Coast
+                    councilRate = 2200;
+                    break;
+                case '4810': // Townsville
+                    councilRate = 1500;
+                    break;
+                case '4870': // Cairns
+                    councilRate = 1800;
+                    break;
+                default:
+                    councilRate = 1800; // Default rate for other postcodes
+                    break;
+            }
+
+            document.getElementById('councilRates').value = councilRate;
+        }
+
+        function calculateYield() {
+            const purchasePrice = parseFloat(document.getElementById('purchasePrice').value);
+            const rentalIncome = parseFloat(document.getElementById('rentalIncome').value) * 52; // Convert weekly to annual
+            const agencyFeePercentage = parseFloat(document.getElementById('agencyFee').value) / 100; // Convert to decimal
+            const councilRates = parseFloat(document.getElementById('councilRates').value);
+            const bodyCorporate = parseFloat(document.getElementById('bodyCorporate').value) || 0; // Optional field
+
+            if (isNaN(purchasePrice) || isNaN(rentalIncome) || isNaN(agencyFeePercentage) || isNaN(councilRates)) {
+                document.getElementById('result').innerText = "Please enter all required fields correctly.";
+                return;
+            }
+
+            const agencyFees = rentalIncome * agencyFeePercentage; // Calculate the agency fees
+            const totalExpenses = agencyFees + councilRates + bodyCorporate;
+            const netAnnualIncome = rentalIncome - totalExpenses;
+            const yieldPercentage = (netAnnualIncome / purchasePrice) * 100;
+
+            document.getElementById('result').innerText = `Real Estate Yield: ${yieldPercentage.toFixed(2)}%`;
+        }
+    </script>
+</body>
+</html>
